@@ -8,9 +8,7 @@ module Prpr
 
     class MentionReviewee < Base
       handle Event::PullRequestReview, action: 'submitted' do
-        p '### PullRequestReview submitted'
-        pp event
-        # Prpr::Action::MentionReviewers::Mention.new(event).call
+        Prpr::Action::MentionReviewee::Mention.new(event).call
       end
     end
 

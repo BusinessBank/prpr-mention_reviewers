@@ -9,12 +9,16 @@ module Prpr
         private
 
         def message
-          channel = to_dm? ? reviewer_mention_name : room
+          channel = to_dm? ? reviewee_mention_name : room
           Prpr::Publisher::Message.new(body: body, from: from, room: channel)
         end
 
         def pull_request
           event.pull_request
+        end
+
+        def pull_request_owner
+          pull_request.user
         end
 
         def requested_reviewer
@@ -23,23 +27,24 @@ module Prpr
 
         def body
           <<-END
-#{reviewer_mention_name}
+#{reviewee_mention_name}
 #{comment_body}
 #{pull_request.html_url}
           END
         end
 
         def comment_body
-          comment = env.format(:mention_reviewers_body, pull_request)
-          comment.empty? ? "Please review my PR: #{pull_request.title}" : comment
+          comment = env.format(:mention_reviewee_body, pull_request)
+          # comment.empty? ? "Please review my PR: #{pull_request.title}" : comment
+          comment.empty? ? "`#{pull_request.title}`のレビューを承認しました :+1:" : comment
         end
 
-        def reviewer_mention_name
-          members[reviewer] || reviewer
+        def reviewee_mention_name
+          members[reviewee] || reviewee
         end
 
-        def reviewer
-          "@#{requested_reviewer.login}"
+        def reviewee
+          "@#{pull_request_owner.login}"
         end
 
         def from
