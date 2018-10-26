@@ -3,7 +3,9 @@ module Prpr
     module MentionReviewee
       class Mention < Base
         def call
-          Publisher::Adapter::Base.broadcast message
+          if review_state == 'approved'
+            Publisher::Adapter::Base.broadcast message
+          end
         end
 
         private
@@ -19,6 +21,14 @@ module Prpr
 
         def pull_request_owner
           pull_request.user
+        end
+
+        def review
+          event.review
+        end
+
+        def review_state
+          review.state
         end
 
         def requested_reviewer
