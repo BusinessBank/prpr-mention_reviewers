@@ -73,7 +73,7 @@ module Prpr
         end
 
         def repository_name
-          ENV['MEMBER_REPO_NAME']
+          env[:member_repo_name]
         end
 
         def to_dm?
